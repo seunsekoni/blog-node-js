@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const postRoutes = require('./routes/posts')
 const authRoutes = require('./routes/auth')
 // const expressValidator = require('express-validator');
@@ -34,6 +35,7 @@ const myOwnMiddleware = (req, res, next) => {
 app.use(morgan("dev"));
 app.use(myOwnMiddleware);
 app.use(bodyParser.json());
+app.use(cookieParser());
 // app.use(expressValidator());
 // link various routes to their routes
 app.use('/', postRoutes);

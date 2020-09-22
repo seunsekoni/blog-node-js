@@ -4,8 +4,12 @@ const express = require('express');
 const router = express.Router()
 const { createPostValidation, validate } = require("../validators");
 const { authMiddleware } = require('../controllers/auth')
+const { userById } = require('../controllers/user');
 
-router.get('/', authMiddleware, getPosts);
-router.post('/post', createPostValidation(), validate, createPost);
+router.get('/', getPosts);
+router.post('/post', authMiddleware, createPostValidation(), validate, createPost);
+
+// if it sees param :userId in the route, it calls the userById function
+router.param('userId', userById)
 
 module.exports = router;

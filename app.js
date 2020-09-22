@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const postRoutes = require('./routes/posts')
 const authRoutes = require('./routes/auth')
+const userRoutes = require('./routes/user')
 // const expressValidator = require('express-validator');
 
 // initialize dotenv
@@ -40,6 +41,7 @@ app.use(cookieParser());
 // link various routes to their routes
 app.use('/', postRoutes);
 app.use('/', authRoutes);
+app.use('/', userRoutes);
 
 // handle error if an unauthorized error is returned
 app.use(function (err, req, res, next) {

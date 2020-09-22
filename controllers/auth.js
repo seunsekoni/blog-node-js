@@ -23,9 +23,20 @@ exports.signUp = async(req, res) => {
             delete strippedUserDetails.password;
             delete strippedUserDetails.salt;
             delete strippedUserDetails.hashed_password;
+
+             // generate a token with the user id
+            const token = jwt.sign({id: user._id}, process.env.JWT_TOKEN, {expiresIn: '24h'})
+
+            // persist the name 'token' in the cookie and give expiry date
+            res.cookie('token', {expire: new Date() + 999999  })
+            // return the response and 
+            const {_id, name, email} = user
+
             return res.json({
                 message: "User created successfully",
-                data: strippedUserDetails
+                data: strippedUserDetails,
+                user: {_id, name, email},
+                token: token,
             })
 
         }
@@ -76,4 +87,14 @@ exports.signOut = (req, res) => {
     })
 }
 
-exports.authMiddleware = expressJwt({secret: process.env.JWT_TOKEN, algorithms: ['HS256']})
+
+exports.authMiddleware = expressJwt({
+    // if token is valid epress-jwt appends the verified user id
+    // in auth key to the requset (req) objects
+    secret: process.env.JWT_TOKEN, 
+    algorithms: ['HS256'],
+
+    // eg use auth.id to get the id of the current authenticated user
+    userProperty: "auth",
+})
+

@@ -1,7 +1,7 @@
 const User = require('../models/users');
 
 exports.userById = (req, res, next, id) => {
-    User.findById(id).exec((err, user) => {
+    User.findById(id).select('_id name email createdAt').exec((err, user) => {
         if(err || !user) {
             res.status(400).json({
                 error: "User not found"
@@ -37,4 +37,10 @@ exports.allUsers = (req, res) => {
                 })
             })
         .select('name email createdAt updatedAt')
+}
+
+exports.getUser = (req, res) => {
+    return res.json({
+        user: req.profile
+    })
 }

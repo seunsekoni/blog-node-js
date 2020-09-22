@@ -41,6 +41,15 @@ app.use(cookieParser());
 app.use('/', postRoutes);
 app.use('/', authRoutes);
 
+// handle error if an unauthorized error is returned
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      res.status(401).json({
+          error: "Unauthorized"
+      });
+    }
+  });
+
 
 const port = process.env.PORT || 7000;
 app.listen(port, () => {

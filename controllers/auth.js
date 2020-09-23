@@ -58,7 +58,7 @@ exports.signIn = (req, res) => {
             })
         }
 
-        // if user is found, check if password is correct and authenticate
+        // if user is found, check if password is correct and then authenticate
         if(!user.authenticate(password)) {
             return res.status(401).json({
                 error: "Username/Password not found"
@@ -95,6 +95,25 @@ exports.authMiddleware = expressJwt({
     algorithms: ['HS256'],
 
     // eg use auth.id to get the id of the current authenticated user
-    userProperty: "auth",
+    requestProperty: "auth",
 })
+
+// exports.me = function(req,res){
+//     if (req.headers && req.headers.authorization) {
+//         var authorization = headers.authorization,
+//             decoded;
+//         try {
+//             decoded = jwt.verify(authorization, process.env.JWT_TOKEN);
+//         } catch (e) {
+//             return res.status(401).send('unauthorized');
+//         }
+//         var userId = decoded.id;
+//         // Fetch the user by id 
+//         User.findOne({_id: userId}).then(function(user){
+//             // Do something with the user
+//             return res.send(200);
+//         });
+//     }
+//     return res.status(500);
+// }
 

@@ -1,5 +1,6 @@
 const User = require('../models/users');
 const _ = require('lodash');
+const { authMiddleware } = require('./auth');
 
 exports.userById = (req, res, next, id) => {
     User.findById(id).select('_id name email createdAt').exec((err, user) => {
@@ -41,6 +42,8 @@ exports.allUsers = (req, res) => {
 }
 
 exports.getUser = (req, res) => {
+    // req.profile is comming from the authMiddleware middleware
+    // check the user.js route file
     return res.json({
         user: req.profile
     })

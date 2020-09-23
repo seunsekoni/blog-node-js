@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const postRoutes = require('./routes/posts')
 const authRoutes = require('./routes/auth')
 const userRoutes = require('./routes/user')
+const JWT = require('jsonwebtoken')
 // const expressValidator = require('express-validator');
 
 // initialize dotenv
@@ -42,6 +43,23 @@ app.use(cookieParser());
 app.use('/', postRoutes);
 app.use('/', authRoutes);
 app.use('/', userRoutes);
+
+// app.use(function(req, res, next) {
+//     console.log(req.cookies['token'])
+//     JWT.verify(req.cookies['token'], process.env.JWT_SECRET, function(err, decodedToken) {
+//         if(err) { /* handle token err */ 
+//             return res.status(401).json({
+//                 message: "Could not find user id",
+//                 err: err
+//             })
+//         }
+        
+//         req.userId = decodedToken.id;   // Add to req object
+//         console.log(req);
+//         next();
+//     });
+// });
+
 
 // handle error if an unauthorized error is returned
 app.use(function (err, req, res, next) {

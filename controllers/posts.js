@@ -1,8 +1,26 @@
 
 const Post = require('../models/posts');
 const Formidable = require('formidable');
+const _ = require('lodash');
 // fileSystem
 const fs = require('fs');
+const { exception } = require('console');
+const { post } = require('../routes/auth');
+
+exports.postById = (req, res, next, id) => {
+    Post.findById(id)
+        .populate("postedBy", "_id name email")
+        .exec((err, post) => {
+            if(err || !post) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+            // append post to the request object
+            req.post = post
+            next();
+        })
+}
 
 exports.getPosts = (req, res) => {
     const posts = Post.find()
@@ -54,6 +72,87 @@ exports.createPost = (req, res, next) => {
         })
     })
 }
+
+exports.postsByUser = (req, res) => {
+    Post.find({postedBy: req.profile._id})
+        .populate("postedBy", "_id name email")
+        .sort("createdAt")
+        .exec((err, posts) => {
+            if(err) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+            res.json(posts)
+        })
+}
+
+exports.postDetail = (req, res) => {
+    Post.findOne(req.post._id)
+        .populate("postedBy", "_id name email")
+        .sort("createdAt")
+        .exec((err, posts) => {
+            if(err) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+            res.json(posts)
+        })
+}
+
+exports.isPoster = (req, res, next) => {
+    // check if the post exists
+
+
+    // ascertain the conditions that ensures the
+    //  creator of the post is the one deleting the post
+    let isPoster = req.post.postedBy._id == req.auth.id;
+    if(!isPoster) {
+        return res.status(403).json({
+            error: "You are not authorized for this operation",
+        })
+    }
+    next()
+    
+}
+
+exports.updatePost = (req, res, next) => {
+    let post = req.post;
+    post = _.extend(post, req.body);
+    post.updatedAt = Date.now();
+    post.save((err, result) => {
+        if(err) {
+            return res.status(400).json({
+                error: "Unable to update post"
+            })
+        }
+        return res.json({
+            message: "Post updated successfully",
+            post: result
+        })
+    })
+}
+
+exports.deletePost = (req, res) => {
+    // console.log(res)
+    let post = req.post
+    console.log('is body '+ req.body)
+    post.remove((err, deletedPost) => {
+        if(err) {
+            return res.status(400).json({
+                error: "Post could not be found"
+            })
+        }
+        res.json({
+            message: "Post is deleted successfully"
+        })
+    })
+}
+
+
+
+
 // exports.me = function(req,res){
 //     // if (req.headers && req.headers.authorization) {
 //     //     var authorization = headers.authorization,
